@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { insert , getStaff, clear, updateStaff } from '../../../../redux/actions/staff';
+import { insert , getStaff, updateStaff } from '../../../../redux/actions/staff';
 
 
 //DESIGN
@@ -26,10 +26,15 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Input from '@mui/material/Input';
 import Box from '@mui/material/Box';
 
+import LoadingButton from '@mui/lab/LoadingButton'
+
 import useStyles from './styles';
+
+import SaveIcon from '@mui/icons-material/Save'
 
 //Notification
 import { toast } from 'react-toastify';
+import { EDITSTAFF } from '../../../../redux/constant';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -39,34 +44,29 @@ export const EditStaff = (props) => {
 
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { open , id } = props;
-  const thisStaff = useSelector((state) => (state.staff));
-    const [loading, setLoading] = useState(true);
+    const { open ,setOpen, id } = props;
+  const thisStaff = useSelector((state) => (state.staffs));
+   // const [loading, setLoading] = useState(true);
+    const [loadingBTN, setLoadingBTN] = useState(false);
+   
     const [data, setData] = useState({
         firstname : '',
         lastname : '',
         email : '',
         username : '',
         phone : '', 
-        password : '',
         address : '',
-        role : 2,
-        photo : ''
-    })
+        })
+
     const [photo,setPhoto] = useState();
     const [viewImg,setViewImg] = useState();
     const [error, setError] = useState([]);
  
         const handleClose = () => {
-            props.setOpen(!open);
+            setOpen(false);
         };
 
-        const Clear = async () => {
-           
-            const response = await clear();
-            alert(response)
-           // dispatch(clear())
-        }
+        
 
     const handleImg = (e) => {
         e.persist()
@@ -87,6 +87,8 @@ export const EditStaff = (props) => {
         formData.append('username' ,data.username)
         formData.append('phone' ,data.phone)
         formData.append('address' ,data.address)
+
+     
        // formData.append('password' ,data.password)
         formData.append('role' ,data.role)
        // formData.append('confirmpassword' ,data.confirmpassword)
@@ -98,32 +100,47 @@ export const EditStaff = (props) => {
         console.log('Response from Staff',response);
         if(response){
         if(response.status === 200){
-            toast(response.message.message);
+            setOpen(false);
+            dispatch({ type: EDITSTAFF, payload:response.response })
+            toast('Staff Updated!');
             setError('')
-            props.setOpen(!open);
-            dispatch(getStaff());
+           
+          //  dispatch(getStaff());
         }else if(response.status === 400){
             setError(response.errors)
         }
+        
        }
-    
+       setLoadingBTN(false)
     }
 
     useEffect(()=>{
-        if(thisStaff.items){
-        const found = thisStaff.items.find(item => item.id === id);
-        console.log('found:',found);
-        if(found){
-        setData(found)
+        if(thisStaff.staffs){
+        const staff = thisStaff.staffs.find(item => item.user.id === id);
+        console.log('found:',staff);
+        if(staff){
+        setData({
+             firstname : staff.user.firstname , 
+             lastname : staff.user.lastname ,  
+             email : staff.user.email ,  
+             username : staff.user.username ,  
+             phone : staff.phone ,  
+             address : staff.address ,  
+             })
+        console.log('User ID:',staff.user.id);
+            
+       // setData({ ...data , oldemail : found.email , oldusername: found.username })
        // setViewImg(found.photo)
-        setViewImg(`${process.env.REACT_APP_API_URL}/${found.photo}`)
-        
+        setViewImg(`${process.env.REACT_APP_API_URL}/${staff.photo}`)
+       
        // setPhoto()
-       setLoading(false)
+     //  setLoading(false)
         }
         }
-    },[id])
+    },[id,thisStaff.staffs])
 
+    
+  //  console.log('Olddata:', oldata);
   return (
     <>   { data ? 
         
@@ -149,7 +166,7 @@ export const EditStaff = (props) => {
                                     error={error && error.firstname ? true : false}
                                     variant="outlined"
                                 //  className="form-control"
-                                   // fullWidth='sm'
+                                    fullWidth
                                     size="small"
                                     label="Firstname"
                                 // value="Phone Number"
@@ -182,6 +199,7 @@ export const EditStaff = (props) => {
                         <div className="row">
                             <div className="col-md-6">
                                 <div className="form-group">
+                               
                                     <TextField
                                      name='email'
                                      onChange={handleInput}
@@ -219,6 +237,7 @@ export const EditStaff = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-md-6">
+                               
                                 <div className="form-group">
                                     <TextField
                                      name='username'
@@ -309,7 +328,7 @@ export const EditStaff = (props) => {
                                     error={error && error.address ? true : false}
                                   //  maxRows={4}
                                   rows = {4}
-                                    //fullWidth='sm'
+                                    fullWidth
                                    // value={value}
                                   //  onChange={handleChange}
                                   inputProps={{style: {fontSize: 14}}}
@@ -322,10 +341,20 @@ export const EditStaff = (props) => {
                         </div>
                         <hr/>
                         <div className="row">
-                         
+                                <LoadingButton
+                                    color='secondary'
+                                    onClick={()=> setLoadingBTN(true)}
+                                  // onClick={handleClose}
+                                    loading={loadingBTN}
+                                    loadingPosition='start'
+                                    startIcon={<SaveIcon/>}
+                                    variant='contained'
+                                >
+                                    Save
+                                    </LoadingButton>
 
                             <button type='button' className='btn btn-danger btn-sm btn-fill  pull-right' onClick={handleClose}><b> &nbsp; CANCEL &nbsp;</b></button>
-                            <button type='submit' className='btn btn-primary btn-sm btn-fill pull-right'><b> &nbsp; SAVE  &nbsp;</b></button>
+                            <button type='submit' className='btn btn-primary btn-sm btn-fill pull-right'><b> &nbsp; SAVE CHANGES  &nbsp;</b></button>
 
                         </div>
                      </form>

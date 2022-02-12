@@ -1,5 +1,6 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes,Outlet } from 'react-router-dom'
+import Students from '../../components/admin/Students';
 import StudentRoute from '../../routes/path/StudentRoute';
 
 import { Footer } from './Footer';
@@ -8,34 +9,13 @@ import { SideBar } from './SideBar';
 
 
 
-const Main = () => {
+const Main = () => {    
     return (
         <div class="wrapper">
            <SideBar/>
                <div class="main-panel">
                         <Header/>
-                        <Switch>
-                            {
-                                StudentRoute.map((route, idx) => {
-                                  
-                                    return (
-                                        route.component && (
-                                        <Route
-                                            key={idx}
-                                            path={route.path}
-                                            exact = {route.exact}
-                                            name={route.name}
-                                            render={(props)=> (
-                                                <route.component {...props} />
-                                            )}
-
-                                        />
-                                        )
-                                    )
-                                })
-                            }
-                        </Switch>
-                    
+                          <Outlet />
                         <Footer/>
                  </div>
         </div>

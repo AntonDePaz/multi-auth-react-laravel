@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StaffMiddleware
 {
@@ -21,7 +22,7 @@ class StaffMiddleware
                 return $next($request);
             }else{
                 return response()->json([
-                    'message' => 'Access Denied! Not Student!'
+                    'message' => 'Access Denied! Not Staff!'
                 ],403);
             }
         }else{

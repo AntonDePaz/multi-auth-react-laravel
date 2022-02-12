@@ -1,68 +1,37 @@
-import {GETSTAFF ,VALIDATE_INPUT_ERROR ,CLEAR } from '../constant'
-import { toast } from 'react-toastify';
+import {ADDSTAFF, DELETESTAFF, EDITSTAFF, GETSTAFF } from '../constant'
+
 const initState = {
-    items: [],
+    staffs: [],
     errors: [],
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (staff = initState, action) => {
+export default (state = initState, action) => {
     switch (action.type) {
         
         case GETSTAFF:
             return {
                // items: [...users.items, action.payload],
-                items: action.payload,
+               staffs: action.payload,
                 errors: [],
             }
-            // case UPDATE:
-            //     // return guestsx.map((guest) => (guest._id === action.payload._id ? action.payload : guest));
-            //     return {
-            //         error: [],
-            //         items: guestsx.items.map((guest) => (guest._id === action.payload._id ? action.payload : guest))
-            //     }
-            // case DELETE:
-            //     //  return  guestsx.filter((guest) => guest._id !== action.payload  );
-
-            //     return {
-            //         error: [],
-            //         items: guestsx.items.filter((guest) => guest._id !== action.payload)
-            //     }
-        //     case AUTHLOGIN :
-        //         return {
-        //             items: action.payload,
-        //             errors: [],
-        //             isAuth : true
-        //         }
-      
-        // case LOGOUT : 
-        //      localStorage.clear();
-        //     return {
-        //         items: [],
-        //         errors: [],
-        //         isAuth : false
-        //     }
-            
-        case VALIDATE_INPUT_ERROR:
-           console.log('aa:',action.payload)
-            toast.error('Field Error',action.payload);
-                return {
-                    items: [],
-                    errors: action.payload,
+        case ADDSTAFF:
+            return {
+                staffs: [...state.staffs, action.payload],
+                errors: [],
+            }
+        case EDITSTAFF:
+            return {
+                staffs: state.staffs.map((item) => (item.id === action.payload.id ? action.payload : item)),
+                errors: [],
+            }
+      case DELETESTAFF:
+                return{
+                    staffs: state.staffs.filter((item) => item.user_id !== action.id),
+                    errors: [],
                 }
-        case CLEAR:
-                    return {
-                        items: [],
-                        errors: [],
-                    }
-        // case AUTHERROR:
-        //     return {
-        //         items: [],
-        //         errors: action.payload,
-        //         isAuth : false
-        //     }
         default:
-            return staff;
+            return state;
 
     }
 }

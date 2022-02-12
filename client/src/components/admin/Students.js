@@ -1,68 +1,129 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import {  useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import AddStudent from './modal/student/AddStudent';
+import { useDispatch, useSelector } from 'react-redux';
+//import { getCourse, getStudents } from '../../redux/actions/student';
+import { Backdrop, CircularProgress,CardMedia,ButtonGroup } from '@mui/material';
+import EditStudent from './modal/student/EditStudent';
+import DeleteModal from './modal/student/DeleteModal';
+//import hasToken from '../../layouts/auth';
+
+ import TableData from './modal/student/TableData';
+import Upload from './modal/student/Upload';
+ // import MUITable from './modal/student/MuiTable';
+
+// import MUIDataTable from "mui-datatables";
+// import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+
+// import '@fortawesome/fontawesome-free/css/all.min.css';
+// import'bootstrap-css-only/css/bootstrap.min.css'; 
+// import 'mdbreact/dist/css/mdb.css';
+
+//import { MDBDataTableV5 } from 'mdbreact';
 
 const Students = () => {
 
-    const [show, setShow] = useState(false);
-      
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const [open, setOpen] = useState(false);
+    const [eopen, esetOpen] = useState(false);
+    const [dopen, dsetOpen] = useState(false);
+    const [uopen, usetOpen] = useState(false);
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const states = useSelector(state => state.students)
+    const auth = useSelector((state) => state.auth);
+
+    const [students, setStudents] = useState([]);
+    const [course, setCourse] = useState();
+    const [loading,setLoading] = useState(true)
+    const [id,setId] = useState(0);
 
 
-    const btnaddStudent = () => {
-       
-        var mymodal = new window.bootstrap.Modal(document.getElementById('studentaddmodal'));
-        mymodal.show();
+
+
+
+
+
+
+    
+
+ const handleditStaff = (id) => {
+    setId(id)
+    esetOpen(true)
+}
+const handldeleteStaff = (id) => {
+    setId(id)
+   dsetOpen(!dopen)
+}
+
+ useEffect(()=>{
+     setLoading(true)  
+    if(states.students){
+        console.log('REDUCER STUDENT NAGBAG.O');
+         setStudents(states.students);
+         setCourse(states.course)
+        setLoading(false)
     }
+ },[states]);
+      
+    const btnaddStudent = () => {
+      setOpen(true)
+    }
+  //var tabelRow = '';
+    if(loading){
+        return  ( 
+         <Backdrop 
+             sx={{ color : '#fff' , zIndex : (theme) => theme.zIndex.drawer + 1 }}
+             open={loading} >
+              <CircularProgress />
+         </Backdrop>
+        ) 
+    }
+    // else{
+ 
+    //     tabelRow = 
+    //      students.map((item , index) => { 
+    //          return (
+    //              <tr key={index}>
+    //                  <td>{++index}</td>
+    //                  {/* <td>
+    //                  <CardMedia
+    //                      component="img"
+    //                    //  width="100px"
+    //                      image={`${process.env.REACT_APP_API_URL}/${item.photo}`}
+    //                      alt="My Profile"
+    //                      style={{ borderRadius : '5px' , width : '80px' }}
+    //                   />
+    //                   </td> */}
+    //                  <td>{item.id_number}</td>
+    //                  <td>{item.user.firstname+' '+item.user.lastname}</td>
+    //                  <td>{item.phone}</td>
+    //                  <td>{item.user.username}</td>
+    //                  <td>{item.user.email}</td>
+    //                  <td>{item.course.description}</td>
+    //                  <td>{item.address}</td>
+    //                  <td>
+ 
+    //                      <ButtonGroup variant="text" aria-label="text button group" >
+    //                          <Button color='primary' onClick={ () => handleditStaff(item.user.id)}><h6>EDIT</h6></Button>
+    //                          <Button color="secondary" onClick={ () => handldeleteStaff(item.user.id)} ><h6>DELETE</h6></Button>
+    //                      </ButtonGroup>
+    //                  </td>
+                    
+    //              </tr>
+    //          )   
+    //      });
+    // }
 
-    console.log('show',show);
+
+
 
     return ( 
         <div className="content">
-
-                 {/* <Button variant="primary" onClick={handleShow}>
-                    Launch demo modal
-                    </Button>
-            
-                    <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                        Close
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                        </Button>
-                    </Modal.Footer>
-                    </Modal>
-         */}
-
-{/* 
-                    <div class="modal fade" id="payonlineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Online Payment Method</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                   <hr/>
-                </div>
-                  
-                </div>
-            </div>
-            </div> */}
-
-               
-                  
-
-
+            <AddStudent open={open} setOpen={setOpen} course={course} />
+            <EditStudent eopen={eopen} esetOpen={esetOpen} id={id} />
+            <DeleteModal dopen={dopen} dsetOpen={dsetOpen} id={id} />
+            <Upload uopen={uopen} usetOpen={usetOpen}/>
         <div className="container-fluid">
             <div className="row">
 
@@ -73,62 +134,46 @@ const Students = () => {
                             <h4 className="title">Users List</h4>
                         </div>
                         <div className="content">
-                            <div class="content table-responsive table-full-width">
-                                <table class="table table-striped">
+                          {/* < MUITable /> */}
+                        {/* <MDBDataTableV5
+                        hover
+                        entriesOptions={[5, 20, 25]}
+                        entries={5}
+                        pagesAmount={4}
+                        data={datatable}
+                        pagingTop
+                        searchTop
+                        searchBottom={false}
+                        barReverse
+                        /> */}
+                        {/* <MUIDataTable 
+                        title={"Employee List"} 
+                        data={data} 
+                        columns={columns} 
+                        options={options} 
+                        /> */}
+                        <TableData esetOpen={esetOpen} dsetOpen={dsetOpen} usetOpen={usetOpen} setId={setId} />
+                            {/* <div class="content table-responsive">
+                           
+                                <table class="table table-striped" id="myTableStudnets">
                                     <thead>
                                         <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Salary</th>
-                                        <th>Country</th>
-                                        <th>City</th>
+                                         <th>Photo</th>
+                                        <th>IDNumber</th>
+                                        <th>Full Name</th>
+                                        <th>Phone</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Course</th>
+                                        <th>Address</th>
+                                        <th>Action</th>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Dakota Rice</td>
-                                            <td>$36,738</td>
-                                            <td>Niger</td>
-                                            <td>Oud-Turnhout</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>Minerva Hooper</td>
-                                            <td>$23,789</td>
-                                            <td>Curaçao</td>
-                                            <td>Sinaai-Waas</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>Sage Rodriguez</td>
-                                            <td>$56,142</td>
-                                            <td>Netherlands</td>
-                                            <td>Baileux</td>
-                                        </tr>
-                                        <tr>
-                                            <td>4</td>
-                                            <td>Philip Chaney</td>
-                                            <td>$38,735</td>
-                                            <td>Korea, South</td>
-                                            <td>Overland Park</td>
-                                        </tr>
-                                        <tr>
-                                            <td>5</td>
-                                            <td>Doris Greene</td>
-                                            <td>$63,542</td>
-                                            <td>Malawi</td>
-                                            <td>Feldkirchen in Kärnten</td>
-                                        </tr>
-                                        <tr>
-                                            <td>6</td>
-                                            <td>Mason Porter</td>
-                                            <td>$78,615</td>
-                                            <td>Chile</td>
-                                            <td>Gloucester</td>
-                                        </tr>
+                                    <tbody> 
+                                        {tabelRow}
                                     </tbody>
                                 </table>
 
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

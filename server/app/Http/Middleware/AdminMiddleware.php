@@ -23,6 +23,7 @@ class AdminMiddleware
                 return $next($request);
             }else{
                 return response()->json([
+                    'status' => 403,
                     'message' => 'Access Denied! Not Admin!'
                 ],403);
             }

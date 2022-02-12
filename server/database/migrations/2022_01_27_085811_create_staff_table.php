@@ -15,6 +15,7 @@ class CreateStaffTable extends Migration
     {
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
+            $table->int('user_id');
             $table->string('photo');
             $table->string('phone');
             $table->string('address');

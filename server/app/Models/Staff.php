@@ -18,6 +18,7 @@ class Staff extends Model
         // 'email',
         // 'username',
         // 'password',
+        'user_id',
         'phone',
         'photo',
         'address'
@@ -26,7 +27,7 @@ class Staff extends Model
     protected $with = ['user'];
 
     public function user(){
-        return $this->belongsTo(User::class, 'foreign_id','id');
+        return $this->belongsTo(User::class, 'user_id','id');
     }
 
 }

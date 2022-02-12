@@ -95,7 +95,7 @@ class AuthController extends Controller
                     $token = $user->createToken($user->email.'_admintoken', ['admin'])->plainTextToken;
                 }
                 else{
-                    $token = $user->createToken($user->email.'_studenttoken', [''])->plainTextToken;
+                    $token = $user->createToken($user->email.'_studenttoken', ['student'])->plainTextToken;
                 }
                 $data = [
                     'firstname' => $user->firstname,
@@ -125,6 +125,50 @@ class AuthController extends Controller
             'status' => 200,
             'message' => 'Logged Out Successfully',
         ]);
+
+    }
+
+
+    public function refreshtoken(){
+        auth()->user()->tokens()->delete();
+        $user = auth('sanctum')->user();
+
+       // $user = User::where('username', $request->username)->where('role' , $request->role)->first();
+                if($user->role == 1){  // 1 = Guest
+                   $token = $user->createToken($user->email.'_guesttoken', ['guest'])->plainTextToken;
+                }else if($user->role == 2){ // 2 = Staff
+                    $token = $user->createToken($user->email.'_stafftoken', ['staff'])->plainTextToken;
+
+                }else if($user->role == 3){ // 3 = Admin
+                    $token = $user->createToken($user->email.'_admintoken', ['admin'])->plainTextToken;
+                }
+                else{
+                    $token = $user->createToken($user->email.'_studenttoken', ['student'])->plainTextToken;
+                }
+                $data = [
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'role' => $user->role,
+                    'token' => $token,
+                    'message' => 'Refresh In Successfully',
+                ];
+
+                return response()->json([
+                    'status' => 200,
+                    'data' => $data
+                ]);
+
+       // auth()->user()->tokens()->delete();
+       /// if(auth()->user()->tokens()){
+        //     return response()->json([
+        //     'status' => 200,
+        //     'user' =>  $user
+        //   ]);
+       // }
+      //  return response()->json([
+       //     'status' => 400,
+       //     'message' => 'Please Login First',
+      //  ]);
 
     }
 

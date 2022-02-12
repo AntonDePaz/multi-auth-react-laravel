@@ -1,5 +1,5 @@
 //import { LOGINSUCCESS, LOGINERROR, LOGOUT } from '../constant';
-import {GETSTAFF ,VALIDATE_INPUT_ERROR ,CLEAR } from '../constant';
+import {GETSTAFF } from '../constant';
 import * as api from '../api/staff';
 
 
@@ -27,7 +27,7 @@ import * as api from '../api/staff';
 //     }
 // }
 
-export const getStaff = () => async(dispatch) => {
+export const getStaffs = () => async(dispatch) => {
 
     try {
         //console.log(staff);
@@ -45,7 +45,7 @@ export const getStaff = () => async(dispatch) => {
        // dispatch({ type: INSERT, payload: data })
 
     } catch (error) {
-        console.log('error to Insert Staff: ',error.response);
+        console.log('error to GEt Staff: ',error.response);
        // dispatch({ type: ERR, payload: error.response.data })
     }
 }
@@ -100,7 +100,7 @@ export const updateStaff = async(staff , id) => {
 export const deleteStaff = async(id) => {
 
     try {
-        const { data } = await api.delet(id);
+        const { data } = await api.deletestaff(id);
          return data;
     } catch (error) {
         console.log('error to Delete Staff: ',error.response);
@@ -108,14 +108,14 @@ export const deleteStaff = async(id) => {
 }
 
  //export const clear = () => async() => {
-export const clear = async() => {
+// export const clear = async() => {
 
-    console.log('clear:');
-    const res = 'suceess clear'
-    return res;
-    // dispatch({ type: CLEAR })
+//     console.log('clear:');
+//     const res = 'suceess clear'
+//     return res;
+//     // dispatch({ type: CLEAR })
 
-}
+// }
 
 
 // export const logout = () => async(dispatch) => {

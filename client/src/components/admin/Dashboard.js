@@ -1,27 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom'
+import hasToken from '../../layouts/auth';
 import { login } from '../../redux/actions/auth';
+import { Backdrop, CircularProgress,CardMedia,ButtonGroup } from '@mui/material';
 
 const Home = () => {
 
-    const history = useHistory();
-    const state = useSelector((state) => state.auth);
-    //const [loading ,setLoading] = useState(true)
-   
-    useEffect(()=>{
+    const { students } = useSelector(state => state.students)
+    const {staffs} = useSelector(state => state.staffs)
 
-        if(state.isAuth === false){
-            history.push('/admin/login')
-           // setLoading(true)
-        }
-        // return () =>{
-        //     setLoading(false)
-        // }  
-        
-    },[state.isAuth, history]);
-
-    
+    console.log('a:',students);
     return (
         <div className="content">
             <div className="container-fluid">
@@ -32,13 +20,13 @@ const Home = () => {
                                 <div className="row">
                                     <div className="col-xs-5">
                                         <div className="icon-big icon-warning text-center">
-                                            <i className="ti-server"></i>
+                                            <i className="ti-user"></i>
                                         </div>
                                     </div>
                                     <div className="col-xs-7">
                                         <div className="numbers">
-                                            <p>Capacity</p>
-                                            105GB
+                                            <p>Students</p>
+                                            { students.length }
                                         </div>
                                     </div>
                                 </div>
@@ -57,13 +45,13 @@ const Home = () => {
                                 <div className="row">
                                     <div className="col-xs-5">
                                         <div className="icon-big icon-success text-center">
-                                            <i className="ti-wallet"></i>
+                                            <i className="ti-github"></i>
                                         </div>
                                     </div>
                                     <div className="col-xs-7">
                                         <div className="numbers">
-                                            <p>Revenue</p>
-                                            $1,345
+                                            <p>Staff</p>
+                                            {staffs.length}
                                         </div>
                                     </div>
                                 </div>

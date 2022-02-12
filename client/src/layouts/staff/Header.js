@@ -1,7 +1,58 @@
-import React from 'react';
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link,useNavigate } from 'react-router-dom'
+import { logout } from '../../redux/actions/auth';
+import hasToken from '../auth';
+
 
 export const Header = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [isLogin,setIsLogin] = useState(false);
+    const [name , setName] = useState('');
+    const auth = useSelector((state) => state.auth);
+   // const [loading, setLoading] = useState(true);
+
+ 
+    useEffect(()=>{
+        if(hasToken()){
+            setIsLogin(hasToken())
+        }else{
+            setIsLogin(false) 
+            setName('')
+        }
+
+    },[auth])
+
+    // useEffect(()=>{
+    //     if(!localStorage.getItem('authtoken')){
+    //         setIsLogin(false)
+    //     }else{
+    //         setIsLogin(true)
+    //         setName(localStorage.getItem('authname'))
+
+    //     }
+    //     // if(auth.isAuthStudent){
+    //     //     // history.push('/')
+    //     //     setIsLogin(hasToken())
+    //     //     // setLoading(false)
+    //     //     }
+    //     //setLoading(false)
+    // },[auth])
+
+    const submitLogout = () => {
+       // console.log('logout');
+
+       dispatch(logout())
+      // navigate('/login')
+    }
+
+    // if(loading){
+    //     return <h2>Loading...</h2>
+    // }
+
+
   return (
             <nav className="navbar navbar-default">
             <div className="container-fluid">
@@ -19,6 +70,7 @@ export const Header = () => {
                 </div>
                 <div className="collapse navbar-collapse">
                     <ul className="nav navbar-nav navbar-right">
+                       { !isLogin.isLogin ? (<>
                         <li>
                             <Link to="/login" className="dropdown-toggle" data-toggle="dropdown">
                                 <i className="ti-download"></i>
@@ -31,25 +83,19 @@ export const Header = () => {
                                 <p> Register</p>
                             </Link>
                         </li>
+                        </> ) : ( <>
                         <li className="dropdown">
-                            <Link to="/" className="dropdown-toggle" data-toggle="dropdown">
+                            <Link to="#" className="dropdown-toggle" data-toggle="dropdown">
                                     <i className="ti-bell"></i>
                                     <p className="notification">5</p>
-                                    <p>Notifications</p>
+                                    <p>{isLogin.name}</p>
                                     <b className="caret"></b>
                             </Link>
                             <ul className="dropdown-menu">
-                                <li><Link to="/">Notification 1</Link></li>
-                                <li><Link to="/">Notification 2</Link></li>
-                                
+                                <li><Link to="#" onClick={submitLogout}>Logout</Link></li>
                             </ul>
                         </li>
-                        <li>
-                            <Link to="/">
-                                <i className="ti-settings"></i>
-                                <p>Settings</p>
-                            </Link>
-                        </li>
+                        </> ) }
                     </ul>
 
                 </div>

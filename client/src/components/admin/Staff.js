@@ -1,115 +1,119 @@
 import React,{useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import Addstaff from './modal/staff/addstaff';
-import CardMedia from '@mui/material/CardMedia'
+import {CardMedia,Avatar} from '@mui/material'
+import ButtonGroup from '@mui/material/ButtonGroup'
 
-import { getStaff ,deleteStaff } from '../../redux/actions/staff';
 import EditStaff from './modal/staff/editstaff';
 
 
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { toast } from 'react-toastify';
+import DeleteModal from './modal/staff/DeleteModal';
+import { Backdrop, CircularProgress } from '@mui/material';
+
 
 const Staff = () => {
+
+    //const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const stateStaff = useSelector(state => state.staffs)
+    const auth = useSelector((state) => state.auth);
 
     const [open, setOpen] = useState(false);
     const [eopen, esetOpen] = useState(false);
     const [dopen, setDopen] = useState(false);
-    const [id, setId] = useState();
-    const dispatch = useDispatch()
-    const state = useSelector(state => state.staff)
-
-    const [staffs , setStaff] = useState()
-
-    const [loading , setLoading] = useState(true);
+    const [id, setId] = useState(0);
+   
+    const [staffs , setStaffs] = useState([])
+  
+    const [loading , setLoading] = useState(false);
    
     const handleOpenModal = () => {
         setOpen(!open)
     }
 
-const handleditStaff = (id) => {
-    console.log('id:',id)
-    esetOpen(!open)
-    setId(id)
-}
-const handldeleteStaff = (id) => {
-    console.log('id:',id)
-    setDopen(!dopen)
-    setId(id)
-   
-}
-const confirmDeleteStaff = async () => {
-    console.log('delte id: ', id);
-   
-    const response = await deleteStaff(id);
-    console.log('del:',response);
-    if(response.status === 200){
-        toast.success(response.message.message)
-        setDopen(!dopen)
-        dispatch(getStaff());
-    }else if(response.status === 404){
-        toast.error(response.errors.message)
-        setDopen(!dopen)
-    }else{
-        alert('Something went wrong')
+    const handleditStaff = (id) => {
+        esetOpen(true)
+        setId(id)
     }
-}
-
-    useEffect(()=> {
-        if(state.items){
-            setStaff(state.items);
-            setLoading(false)
-        }
-    },[state.items]);
-
-   if(loading){
-       return <h3>Loading Product...</h3>
-   }else{
-      
-        var data = 
-        staffs.map((item , index) => { 
-            return (
-                <tr key={index}>
-                    <td>{++index}</td>
-                    <td>
-                    <CardMedia
-                        component="img"
-                        height="100"
-                        image={`${process.env.REACT_APP_API_URL}/${item.photo}`}
-                        alt="My Profile"
-                        style={{ borderRadius : '5px' }}
-                     />
-                     </td>
-                    <td>{item.firstname+' '+item.lastname}</td>
-                    <td>{item.email}</td>
-                    <td>{item.phone}</td>
-                    <td>{item.username}</td>
-                    <td>{item.address}</td>
-                    <td>
-                    <button type="button" className="btn btn-primary btn-sm" onClick={ () => handleditStaff(item.id)}  >Edit</button>
-                    <button type="button" className="btn btn-danger btn-sm"  onClick={ () => handldeleteStaff(item.id)} >Delete</button>
-                    </td>
-                   
-                </tr>
-            )   
-        });
-    }
+    const handldeleteStaff = (id) => {
+        setId(id)
+        setDopen(true)
     
-   
-   // console.log('state:staff:',state);
-   
-      
+    }
+    useEffect(()=> {
+        setLoading(true)
+        if(stateStaff.staffs){
+            setLoading(false)
+            console.log('REDUCER STAFF NAGBAG.O');
+            setStaffs(stateStaff.staffs);
+        }
+    },[stateStaff.staffs]);
+
+
+    var TableRow = '';
+   if(loading){
+       return  ( 
+        <Backdrop 
+            sx={{ color : '#fff' , zIndex : (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+            >
+             <CircularProgress color='inherit' />
+        </Backdrop>
+       )
+       
+   } else{
+
+         TableRow = 
+          staffs.map((item , index) => { 
+                return (
+                    <tr key={index}>
+                        <td>{++index}</td>
+                        <td>
+                        <Avatar 
+                            alt='avatar'  
+                            src={`${process.env.REACT_APP_API_URL}/${item.photo}`} 
+                             sx={{ width: 50 , height : 50 }} 
+                             >
+                             {item.user.firstname.charAt(0)+""+item.user.lastname.charAt(0) } 
+                        </Avatar> 
+                        {/* <CardMedia
+                            component="img"
+                        // height="100"
+                            image={`${process.env.REACT_APP_API_URL}/${item.photo}`}
+                            alt="My Profile"
+                            style={{ borderRadius : '5px', width: '80px' }}
+                        /> */}
+                        </td>
+                        <td>{item.user.firstname+' '+item.user.lastname}</td>
+                        <td>{item.user.email}</td>
+                        <td>{item.phone}</td>
+                        <td>{item.user.username}</td>
+                        <td>{item.address}</td>
+                        <td>
+                            <ButtonGroup variant="text" aria-label="text button group" >
+                                <Button color='primary' onClick={ () => handleditStaff(item.user.id)}><h6>EDIT</h6></Button>
+                                <Button color="secondary" onClick={ () => handldeleteStaff(item.user.id)} ><h6>DELETE</h6></Button>
+                            </ButtonGroup>
+                        </td>
+                    
+                    </tr>
+                )   
+             });
+    }
+
     return (
  
+
         <div className="content">
-            <Addstaff open={open} setOpen={setOpen}  />
+          
+             <Addstaff open={open} setOpen={setOpen}  />
             <EditStaff open={eopen} setOpen={esetOpen} id={id} />
+            <DeleteModal dopen={dopen} setDopen={setDopen} id={id} />
+           
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-12">
@@ -119,7 +123,7 @@ const confirmDeleteStaff = async () => {
                                 <h4 className="title">Staff List</h4>
                             </div>
                             <div className="content">
-                                <div className="content table-responsive table-full-width">
+                                <div className="content table-responsive">
                                     <table className="table table-striped text-center">
                                         <thead>
                                             <th>NO</th>
@@ -132,7 +136,7 @@ const confirmDeleteStaff = async () => {
                                             <th>Action</th>
                                         </thead>
                                         <tbody>
-                                            {data}
+                                            {TableRow}
                                         </tbody>
                                     </table>
 
@@ -142,36 +146,6 @@ const confirmDeleteStaff = async () => {
                     </div>
                 </div>
             </div>
-
-            <Dialog
-                    open={dopen}
-                    // onClose={() => setDopen(false)}
-                    aria-labelledby="confirm-dialog"
-                     fullWidth='xs'
-                     maxWidth='xs'
-                    >
-                    <DialogTitle id="confirm-dialog"> <h5><b>Delete Staff</b></h5> </DialogTitle>
-                    <DialogContent><h6>Are You Sure want to delete this record?</h6></DialogContent>
-                    <DialogActions>
-                        <Button
-                        variant="contained"
-                        onClick={() => setDopen(false)}
-                        color="secondary"
-                        >
-                        NO
-                        </Button>
-                        <Button
-                        variant="contained"
-                        onClick={confirmDeleteStaff}
-                        color="success"
-                        >
-                       YES
-                        </Button>
-                    </DialogActions>
-                    </Dialog>
-
-
-
       </div>
     )
 }

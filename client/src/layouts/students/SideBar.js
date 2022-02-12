@@ -1,32 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '../../redux/actions/auth';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import hasToken from '../auth';
 
 
 export const SideBar = () => {
     const dispatch = useDispatch();
-    const state = useSelector(state => state.auth);
+    const auth = useSelector(state => state.auth);
     const [ user, setUser] = useState();
-
+    const navigate = useNavigate();
 
     useEffect(()=>{
-        if(localStorage.getItem('authtoken')){
-            if(state.items.length !== 0){
-                setUser(state.items.firstname+' '+state.items.lastname);
-            }
+        if(hasToken()){
+            setUser(hasToken())
         }else{
-            setUser('');
+            setUser(false) 
+          //  setName('')
         }
-    },[state]);
+
+    },[auth])
+
+    // useEffect(()=>{
+    //     if(localStorage.getItem('authtoken')){
+    //         if(state.users.length !== 0){
+    //             setUser(state.items.firstname+' '+state.items.lastname);
+    //         }
+    //     }else{
+    //         setUser('');
+    //     }
+    // },[state]);
 
         const submitLogout = () => {
            dispatch(logout());
+           navigate('/login')
         }
 
+
+       // console.log('STUDENT HOME:',state);
 // const checkPath = history.location.pathname === "/" ? "active" : "";
 // const userspath = history.location.pathname === "/users" ? "active" : "";
 
@@ -47,13 +61,13 @@ export const SideBar = () => {
                 </Link>
             </div>
            
-            {user ?
+            { user ?
                 <div className="logo">
                     <span>Welcome</span>
-                    <h3>{user}</h3>
+                    <h3>{user.name}</h3>
                     <Link to='#' onClick={submitLogout}>Logout</Link>
                 </div>
-            :
+             :
              <div className="logo">
                 <span>Welcome</span>
                 <h3>Students</h3>

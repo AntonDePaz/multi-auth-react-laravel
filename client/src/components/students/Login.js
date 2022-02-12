@@ -1,22 +1,28 @@
 import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../../redux/actions/auth';
+import { SUCCESSLOGIN } from '../../redux/constant';
 
 //Notify
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {SideBar}  from '../../layouts/students/SideBar';
+import  {Header}  from '../../layouts/students/Header';
+import hasToken from '../../layouts/auth';
 
 const Login = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
-    const state = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const auth = useSelector((state) => state.auth);
     const [error, setError] = useState([]);
 
+    const [loading, setLoading] = useState(true)
+   
     const [account, setAccount] = useState({
         username: '',
         password :'',
-        role : 0
+        role : 4
     });
 
 
@@ -24,55 +30,113 @@ const Login = () => {
        setAccount({ ...account , [e.target.name] : e.target.value })
     }
 
-   const submitLogin = (e) => {
+   const submitLogin = async(e) => {
     e.preventDefault();
 
-    console.log(account);
-        dispatch(login(account));
+    //console.log(account);
+    //dispatch(login(account));
+
+    const response = await login(account);
+    console.log('Responsess:', response)
+    if(response.status === 200){
+        toast(response.data.message);
+        setError('')
+        console.log('sucess: ',response.data);
+        dispatch({ type: SUCCESSLOGIN, payload: response.data })
+        navigate('/')
+       // history.push('/')
+    }else if(response.status === 400){
+        console.log('error: ',response.errors);
+        setError(response.errors)
+       // dispatch({ type: VALIDATE_INPUT_ERROR, payload: response.errors })
+    }else if(response.status === 401){
+        setError(response.errors)
+        console.log('error: ',response.errors);
+        //dispatch({ type: AUTHERROR, payload: data.errors })
+    }
+
+
    }
 
-   useEffect(()=>{
+    // useEffect(()=>{
+    //     if(auth.isAuthStudent){
+    //         history.push('/')
+    //     }
+        
+    //     setLoading(false)
+    // },[auth])
 
-
-   if(localStorage.getItem('authtoken')){
-        history.push('/')
-   }else{
-
-   
-        console.log('err:',state.errors);
-        console.log('item:',state.items);
-        //  if(state.errors.length < 1 || state.errors === undefined ){
-        //    console.log('Items naa');
-        //   // console.log(''+state.items.message);
-        //     toast(state.items.message);
-        //     setError('')
-        //     // history.push('/');
-        // }else{
-        //    setError(state.errors)
-        //    console.log('Error naa');
-        //  }
-
-        if(state.items.length !== 0){
-            console.log('Items naa');
-        // console.log(''+state.items.message);
-            toast(state.items.message);
-            setError('')
-            history.push('/');
-        }
-        if(state.errors.length !== 0){
-            setError(state.errors)
-            console.log('Error naa');
-        }
-    }
-    
-   },[history, state.errors, state.items])
-
-
- 
+    // useEffect(()=> {
+    //     // console.log('Login State Change:',state.isAuthAdmin)
+    //      if(hasToken()){
+    //       history.push('/admin')
+    //      }
+    //     // setLoading(false)
+    //  },[]);
+  
+//  if(loading){
+//     return <h2>Loading Login......</h2>
+//  }
 
 
 
     return (
+        <div class="wrapper">
+         <div className="sidebar" data-background-color="white" data-active-color="danger">
+                 <ToastContainer/>
+  
+                <div className="sidebar-wrapper">
+                    <div className="logo">
+                        <Link to="/" className="simple-text">
+                            <img src='logo192.png' alt='logo' width='100' />
+                        </Link>
+                    </div>
+                
+                    <div className="logo">
+                        <span>Welcome</span>
+                        <h3>Students</h3>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="main-panel">
+            
+            <nav className="navbar navbar-default">
+            <div className="container-fluid">
+                <div className='row text-center'>
+                    <h3>Student Information System</h3>
+                </div>
+                <div className="navbar-header">
+                    <button type="button" className="navbar-toggle">
+                        <span className="sr-only">Toggle navigation</span>
+                        <span className="icon-bar bar1"></span>
+                        <span className="icon-bar bar2"></span>
+                        <span className="icon-bar bar3"></span>
+                    </button>
+                    {/* <Link className="navbar-brand" to="/">User Profile</Link> */}
+                </div>
+                <div className="collapse navbar-collapse">
+                    <ul className="nav navbar-nav navbar-right">
+                      
+                        <li>
+                            <Link to="/login" className="dropdown-toggle" data-toggle="dropdown">
+                                <i className="ti-download"></i>
+                                <p> Login</p>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/register" className="dropdown-toggle" data-toggle="dropdown">
+                                <i className="ti-upload"></i>
+                                <p> Register</p>
+                            </Link>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
         <div className="content">
             <ToastContainer/>
             <div className="container-fluid">
@@ -122,7 +186,6 @@ const Login = () => {
                                     </div>
                                     <br/>
                                 </div>
-                            
                         </div>
                     </div>
                     <div className="col-lg-8 col-md-7">
@@ -135,11 +198,13 @@ const Login = () => {
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </div>
+        </div>
+        </div>
+
+
     )
 }
 

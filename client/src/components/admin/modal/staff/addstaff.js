@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
-import { insert , getStaff, clear, insertStaff } from '../../../../redux/actions/staff';
+import { insert , getStaff, insertStaff } from '../../../../redux/actions/staff';
 
 
 //DESIGN
@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 
 import TextField from '@mui/material/TextField';
+import CardMedia from '@mui/material/CardMedia'
 
 import IconButton from '@mui/material/IconButton';
 import FilledInput from '@mui/material/FilledInput';
@@ -29,6 +30,7 @@ import useStyles from './styles';
 
 //Notification
 import { toast } from 'react-toastify';
+import { ADDSTAFF } from '../../../../redux/constant';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -58,12 +60,12 @@ export const Addstaff = (props) => {
             props.setOpen(!open);
         };
 
-        const Clear = async () => {
+        // const Clear = async () => {
            
-            const response = await clear();
-            alert(response)
-           // dispatch(clear())
-        }
+        //     const response = await clear();
+        //     alert(response)
+        //    // dispatch(clear())
+        // }
 
     const handleImg = (e) => {
         setViewImg(URL.createObjectURL(e.target.files[0]));
@@ -90,15 +92,16 @@ export const Addstaff = (props) => {
         formData.append('photo', photo); //
        // dispatch(insert(formData));
 
-        const response = await  insertStaff(formData);
+        const  response = await  insertStaff(formData);
        
         console.log('Response from Staff',response);
         if(response){
         if(response.status === 200){
-            toast(response.message.message);
+            dispatch({ type : ADDSTAFF , payload : response.response })
+            toast(response.message);
             setError('')
-            props.setOpen(!open);
-            dispatch(getStaff());
+            props.setOpen(false);
+          //  dispatch(getStaff());
         }else if(response.status === 400){
             setError(response.errors)
         }
@@ -288,21 +291,30 @@ export const Addstaff = (props) => {
                                     </Button>
                                     </label>
                             
-                                    <Box 
+                                    {/* <Box 
                                     sx={{ p: 2, 
                                             border: '1px solid grey' ,
                                             width: '80%',
                                         // height: 300,
                                     
-                                    }}>
-                                        <img
+                                    }}> */}
+                                         <CardMedia
+                                            component="img"
+                                          //  height="200"
+                                            width='100px'
+                                            //image={`http://localhost:8000/${item.photo}`}
+                                            image={ viewImg ? viewImg : "../assets/img/faces/face-0.jpg"}
+                                            alt="My Profile"
+                                            style={{ borderRadius : '5px' , borderColor : 'red' }}
+                                        />
+                                        {/* <img
                                             width="160px"
                                             alt='Img'
                                             loading="lazy"
                                             src={ viewImg ? viewImg : "../assets/img/faces/face-0.jpg"}
-                                        />
+                                        /> */}
                                           <small className='text-danger'>{error ? error.photo : ''}</small>
-                                    </Box>
+                                    {/* </Box> */}
                              </div>
                             </div>
                             <div className='col-md-6'>
@@ -333,7 +345,7 @@ export const Addstaff = (props) => {
                          
 
                             <button type='button' className='btn btn-danger btn-sm btn-fill  pull-right' onClick={handleClose}><b> &nbsp; CANCEL &nbsp;</b></button>
-                            <button type='button' className='btn btn-danger btn-sm btn-fill  pull-right' onClick={Clear}><b> &nbsp; CLEAR &nbsp;</b></button>
+                            {/* <button type='button' className='btn btn-danger btn-sm btn-fill  pull-right' onClick={Clear}><b> &nbsp; CLEAR &nbsp;</b></button> */}
                             <button type='submit' className='btn btn-primary btn-sm btn-fill pull-right'><b> &nbsp; SAVE  &nbsp;</b></button>
 
                         </div>

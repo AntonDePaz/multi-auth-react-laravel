@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate,useLocation } from 'react-router-dom'
 import { logout } from '../../redux/actions/auth';
+
+import hasToken from '../auth';
 
 export const Header = () => {
 
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
     const [isLogin,setIsLogin] = useState(false);
-    const [name , setName] = useState('');
     const state = useSelector((state) => state.auth);
-   // const [loading, setLoading] = useState(true);
 
+
+    var lod = location.pathname;
+    var parts = lod.split('/');
+    var HeaderName = parts[parts.length - 1];
+    
     useEffect(()=>{
-        if(!localStorage.getItem('authtoken')){
-            setIsLogin(false)
+        if(hasToken()){
+            setIsLogin(hasToken())
         }else{
-            setIsLogin(true)
-            setName(localStorage.getItem('authname'))
-
+            setIsLogin(false) 
         }
-        //setLoading(false)
-    },[state.items])
+        //setIsLogin(state.users)
 
-    console.log('admin state:',state);
+    },[state])
+
     const submitLogout = () => {
        dispatch(logout())
+      // navigate('admin/login')
     }
 
-    console.log('isLogin:',isLogin);
   return (
             <nav className="navbar navbar-default">
+        { !isLogin.isLogin ? 'ADMIN LOGIN' : 
             <div className="container-fluid">
                 <div className="navbar-header">
                     <button type="button" className="navbar-toggle">
@@ -39,39 +45,26 @@ export const Header = () => {
                         <span className="icon-bar bar2"></span>
                         <span className="icon-bar bar3"></span>
                     </button>
-                    <Link className="navbar-brand" to="#">Admin Page</Link>
+                    <Link className="navbar-brand" to="#" style={{ textTransform:'capitalize' } }>{HeaderName} Page</Link>
                 </div>
+               
                 <div className="collapse navbar-collapse">
-                    { !isLogin  ? '' : 
+                   
                     <ul className="nav navbar-nav navbar-right">
-
-                        {/* <li>
-                            <Link to="/admin" className="dropdown-toggle" data-toggle="dropdown">
-                                <i className="ti-panel"></i>
-                                <p>Stats</p>
-                            </Link>
-                        </li> */}
                         <li className="dropdown">
                             <Link to="#" className="dropdown-toggle" data-toggle="dropdown">
                                     <i className="ti-user"></i>
-                                    <p> &nbsp; {name}</p>
+                                    <p> &nbsp; {isLogin.name}</p>
                                     <b className="caret"></b>
                             </Link>
                             <ul className="dropdown-menu">
                                 <li><Link to="#" onClick={submitLogout}> <i className='ti-shift-left'></i> Logout</Link></li>
-                                {/* <li><Link to="/">Notification 2</Link></li> */} 
                             </ul>
                         </li>
-                        {/* <li>
-                            <Link to="/">
-                                <i className="ti-settings"></i>
-                                <p>Settings</p>
-                            </Link>
-                        </li> */}
                     </ul>
-                  }
                 </div>
             </div>
+             }
         </nav>
   )
 };

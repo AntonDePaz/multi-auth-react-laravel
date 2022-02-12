@@ -1,17 +1,46 @@
 
 import React, {useEffect, useState} from "react";
+import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
-import { Redirect, Route, useHistory } from "react-router-dom";
+import { Route,Routes, useNavigate } from "react-router-dom";
 import Main from "../layouts/admin/Main";
-import { checkauthorize } from "../redux/actions/auth";
+import { checkall, checkauthorize } from "../redux/actions/auth";
+
+import Authorization from '../Authorization';
+import { Backdrop, CircularProgress } from '@mui/material';
+
+import { getStaffs } from "../redux/actions/staff";
+import { getCourse, getStudents } from "../redux/actions/student";
 
 
-const  AdminRoute = ({...rest}) => {
 
-    const history = useHistory();
-    const dispatch = useDispatch();
-     const [Authenticated, setAuthenticated] = useState(true);
-     const state = useSelector(state => state.auth)
+import AdminLayout from '../layouts/admin/Main';
+
+import Dashboard from '../components/admin/Dashboard';
+
+import Students from '../components/admin/Students';
+import Staff from '../components/admin/Staff';
+
+//const  AdminRoute = ({...rest}) => {
+const  AdminRoute = () => {
+
+    
+
+
+    
+    //  const navigate = useNavigate();
+    //  const auth = useSelector(state => state.auth)
+    //  const staff = useSelector(state => state.staffs)
+    //  const student = useSelector(state => state.students)
+   
+
+    //  const auth = useSelector(state => state.auth)
+    //  const staff = useSelector(state => state.staffs)
+    //  const student = useSelector(state => state.students)
+
+
+
+    
     // const [loading, setLoading] = useState(true);
 
     // axios.defaults.baseURL = 'http://localhost:8000/api';
@@ -25,83 +54,129 @@ const  AdminRoute = ({...rest}) => {
 
 
 
-     useEffect(()  => {
-
-        dispatch(checkauthorize());
-
-        // try {
-        //     axios.get(`http://localhost:8000/api/admin/checkAuth`).then((response) => {
-        //         // if(response.status === 200){
-        //         //     setAuthenticated(true);
-        //         // }
-        //         // setLoading(false);
-
-        //         console.log('www:',response);
-        //     });
-        //     // return () =>{
-        //     //     setAuthenticated(false)
-        //     // }    
-        // } catch (error) {
-        //     console.log('Error:',error)  
-        // }
-        if(state.isAuth === false){
-          //  history.push('/admin/login')
-            setAuthenticated(false)
-        }
-
-    }, []);
-
-   // console.log('state::',state);
-
-    // axios.interceptors.response.use(undefined , function axiosRetryInterceptor(err){
+    //  axios.interceptors.response.use(undefined , function axiosRetryInterceptor(err){
     //     if(err.response.status === 401){
     //       //  swal('Unauthorized', err.response.data.message,'warning')
     //        // history.push('/login');
-
-    //        console.log('403');
+    //        setAuthenticated(false)
+    //        navigate('/admin/login');
+    //        console.log('40111111');
     //     }
+    //     setloading(false)
     //     return Promise.reject(err);
     // });
 
-    // axios.interceptors.response.use(function (res){
-    //     return res; 
-    // }, function  (error) {
-    //     if(error.response.status === 403){
 
-    //         console.log('403');
-    //        // swal('Forbidden',error.response.data.message,'warning');
-    //        /// history.push('/page403');
-    //     }else if(error.response.status === 404) { ///page not found
-    //        // swal('Forbidden','Page Not Found','warning');
-    //        // history.push('/page404');
-    //        console.log('404');
+// useEffect(()=>{
+// console.log('AXION INTERCEPTORS:',auth);
 
-    //     }
-    //     return Promise.reject(error);
-    // }
-    // )
+//         //    useEffect(()=> {
+// //       // console.log('Login State Change:',state.isAuthAdmin)
+//        if(auth.isAuthAdmin){
+//         navigate('/admin')
+//         setAuthenticated(true)
+//         setloading(false)
+//        }
+// //    },[state.isAuthAdmin]);
+
+//  axios.interceptors.response.use(function (res){
+//         return res; 
+//     }, function  (error) {
+        
+//         if(error.response.status === 403){
+//             setAuthenticated(false)
+//           //  console.log('403');
+//            // swal('Forbidden',error.response.data.message,'warning');
+//            // history.push('/login');
+//         }else if(error.response.status === 404) { ///page not found
+//            // swal('Forbidden','Page Not Found','warning');
+//             navigate('/page404');
+//           // console.log('404');
+          
+//         }
+//         else if(error.response.status === 401) { ///page not found
+//            // swal('Forbidden','Page Not Found','warning');
+//            // history.push('/page404');
+//           // console.log('401');
+//          // history.push('/admin/login');
+//          setAuthenticated(false)
+//         }
+//        setloading(false)
+//         return Promise.reject(error);
+//     }
+    
+//     )
+// },[auth]);
 
 
 
 
+//   if(loading){
+//        return  ( 
 
-    // if(loading){
-    //     return <h2>Loading...</h2>
-    // }
+//         <h2>Loading...</h2>
+//         // <Backdrop 
+//         //     sx={{ color : '#fff' , zIndex : (theme) => theme.zIndex.drawer + 1 }}
+//         //     open={loading}
+//         //     >
+//         //      <CircularProgress color='inherit' />
+//         // </Backdrop>
+//        )
+       
+//    }
+    
 
+//    console.log('MAIN ROOT ADMIN:');
+
+
+//    console.log('REST:',rest);
    
-    return (
 
-         <Route {...rest} render={(props) => <Main {...props} />  } />
+    const dispatch = useDispatch();
+
+    useEffect(()=>{
+        console.log('Dispatch ang Admin Layouts MAIN');
+       // dispatch(checkauthorize())
+       // dispatch(checkall())
+        dispatch(getStaffs());
+        dispatch(getStudents());
+        dispatch(getCourse())
+    },[]);
+
+    return (
+        <Routes>
+            <Route path='/' element={<AdminLayout/>} >
+                <Route index element={<Dashboard/>} />
+                <Route path='dashboard' element={<Dashboard/>} />
+                <Route path='students' element={<Students/>} />
+                <Route path='staff' element={<Staff/>} />
+            </Route>
+        </Routes>
+
+
+
+
+
+
+
+    //   <Routes>
+    //      {/* <Route {...rest} render={(props) => <Main {...props} /> } /> */}
+    //      <Route {...rest} render={(props) => <Main {...props} /> } />
+    //    </Routes>
+       //  <Route path="login" element={<LoginStudent />} />
+
+         
          
         // <Route {...rest}
-        //     // render={ ({props, location}) => (
-        //     //     Authenticated ?
-        //     //         ( <Main {...props} /> ) :
-        //     //         ( <Redirect to={ {pathname: '/admin/login', state: {from : location }  } } /> )
-        //     //  ) 
+        //     render={ ({props, location}) => (
+        //         Authenticated ?
+        //             ( <Main {...props} /> ) :
+        //             navigate('/admin/login', { replace: true })
+        //             //( <navigate to={ {pathname: '/admin/login', state: {from : location }  } } /> )
+        //      ) 
              
-        //     // }   
+             
+        //     }   />
             
 
         //     render={ ({props, location}) => (

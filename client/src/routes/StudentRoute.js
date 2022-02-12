@@ -1,41 +1,132 @@
 import axios from "axios";
 import React, {useEffect, useState} from "react";
-import { Redirect, Route, useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect, Route, Routes,  useNavigate } from "react-router-dom";
 import Main from "../layouts/students/Main";
+import { checkauthstudent } from "../redux/actions/auth";
+
+import StudentLayout from '../layouts/students/Main';
+
+import Dashboard from '../components/students/Dashboard';
 
 
-const StudentRoute = ({...rest}) => {
 
-    const history = useHistory();
-     const [Authenticated, setAuthenticated] = useState(true);
-     const [loading, setLoading] = useState(true);
 
-     useEffect(()  => {
+// const StudentRoute = ({...rest}) => {
+const StudentRoute = () => {
 
-        if(!localStorage.getItem('authtoken')){
+    // const navigate = useNavigate();
+    // const dispatch = useDispatch();
+    // const auth = useSelector(state => state.auth)
+    //  const [Authenticated, setAuthenticated] = useState(false);
+    //  const [loading, setLoading] = useState(true);
+
+
+       
+
+
+      
+
+// // useEffect(()=>{
+// //     console.log('MAIN STUDENT AUTH:',auth);
+// //             if(auth.isAuthStudent){
+// //                 //history.push('/')
+// //                 setAuthenticated(true)
+               
+// //                }else{
+// //                 setAuthenticated(false)
+// //                }
+// //                setLoading(false)
+//         axios.interceptors.response.use(undefined , function axiosRetryInterceptor(err){
+//             if(err.response.status === 401){
+//               //  swal('Unauthorized', err.response.data.message,'warning')
+//                // history.push('/login');
+//                setAuthenticated(false)
+//               // history.push('/login');
+//                console.log('ST:401');
+//             }
+//             setLoading(false)
+//             return Promise.reject(err);
+//         });
+    
+//    // },[auth]);
+
+
+
+//     useEffect(()=>{
+//         console.log('AXIOs INTERCEPTORS STUDENTS:',auth);
+        
+//                 //    useEffect(()=> {
+//         //       // console.log('Login State Change:',state.isAuthAdmin)
+//                if(auth.isAuthStudent){
+//                // history.push('/')
+//                 setAuthenticated(true)
+//                 setLoading(false)
+//                }else if(auth.isAuthAdmin){
+//                 navigate('/admin')
+//                 }
+//                    else{
+//                 setAuthenticated(false)
+//                }
+//         //    },[state.isAuthAdmin]);
+        
+//          axios.interceptors.response.use(function (res){
+//                 return res; 
+//             }, function  (error) {
+                
+//                 if(error.response.status === 403){
+//                     setAuthenticated(false)
+//                     console.log('ST 403');
+//                    // swal('Forbidden',error.response.data.message,'warning');
+//                    // history.push('/login');
+//                 }else if(error.response.status === 404) { ///page not found
+//                    // swal('Forbidden','Page Not Found','warning');
+//                    navigate('/page404');
+//                   // console.log('404');
+                  
+//                 }
+//                 else if(error.response.status === 401) { ///page not found
+//                    // swal('Forbidden','Page Not Found','warning');
+//                    // history.push('/page404');
+//                   // console.log('401');
+//                  // history.push('/admin/login');
+//                  console.log('ST 401');
+//                  setAuthenticated(false)
+//                 }
+//              //  setLoading(false)
+//                 return Promise.reject(error);
+//             }
             
-            history.push('/login')
-        }
-      // setLoading(false)
-        // console.log('res123:');
+//             )
+//         },[auth]);
+        
 
-        // try {
-        //     axios.get(`http://localhost:8000/api/student/checkAuth`).then((response) => {
+    // useEffect(()  => {
 
-        //         console.log('res123:',response);
-        //         // if(response.status === 200){
-        //         //     setAuthenticated(true);
-        //         // }
-        //         // setLoading(false);
-        //     });
-        //     return () =>{
-        //        // setAuthenticated(false)
-        //     }    
-        // } catch (error) {
-        //     console.log('Error:',error)  
-        // }
+    //     if(!localStorage.getItem('authtoken')){
+            
+    //         history.push('/login')
+    //     }
+    //   // setLoading(false)
+    //     // console.log('res123:');
 
-    }, [history]);
+    //     // try {
+    //     //     axios.get(`http://localhost:8000/api/student/checkAuth`).then((response) => {
+
+    //     //         console.log('res123:',response);
+    //     //         // if(response.status === 200){
+    //     //         //     setAuthenticated(true);
+    //     //         // }
+    //     //         // setLoading(false);
+    //     //     });
+    //     //     return () =>{
+    //     //        // setAuthenticated(false)
+    //     //     }    
+    //     // } catch (error) {
+    //     //     console.log('Error:',error)  
+    //     // }
+
+    // }, [history]);
 
 
     // axios.interceptors.response.use(undefined , function axiosRetryInterceptor(err){
@@ -62,21 +153,35 @@ const StudentRoute = ({...rest}) => {
     
     // )
 
+    
+    
     // if(loading){
     //     return <h2>Loading...</h2>
     // }
 
    
     return (
-        <Route {...rest}
-            render={ ({props, location}) => (
-                Authenticated ?
-                    ( <Main {...props} /> ) :
-                    ( <Redirect to={ {pathname: '/login', state: {from : location }  } } /> )
-             ) 
-            }   
 
-        />
+    <Routes>
+        <Route path='/' element={<StudentLayout/>} >
+            <Route index element={<Dashboard/>} />
+            <Route path='dashboard' element={<Dashboard/>} />
+            {/* <Route path='students' element={<Students/>} />
+            <Route path='staff' element={<Staff/>} /> */}
+        </Route>
+    </Routes>
+
+
+        // <Route {...rest}
+        //     render={ ({props, location}) => (
+        //         Authenticated ?
+        //             ( <Main {...props} /> ) :
+        //             navigate('/login',{ state: {from : location } })
+        //           //  ( <Redirect to={ {pathname: '/login', state: {from : location }  } } /> )
+        //      ) 
+        //     }   
+
+        // />
     )
 
 
